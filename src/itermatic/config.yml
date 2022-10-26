@@ -1,0 +1,4 @@
+window:
+  title: Themis Database Migrator
+  alert_title: Welcome!
+  alert_text: This is an alert window just saying hello and should also be logging input in log/!

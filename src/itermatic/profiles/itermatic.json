@@ -1,0 +1,11 @@
+{
+  "Profiles":[
+    {
+      "Name" : "Itermatic",
+      "Guid" : "itermatic.profile",
+      "Log Directory" : "",
+      "Automatically Log" : true,
+      "Plain Text Logging" : true
+    }
+  ]
+}

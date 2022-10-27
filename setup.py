@@ -7,9 +7,50 @@ https://github.com/pypa/sampleproject
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
-import pathlib
+from setuptools.command.develop import develop
+from setuptools.command.install import install
+from pathlib import Path
+import json
+import os
 
-here = pathlib.Path(__file__).parent.resolve()
+
+
+class PostDevelopCommand(develop):
+    """Post-installation for development mode."""
+    def run(self):
+        develop.run(self)
+        # PUT YOUR POST-INSTALL SCRIPT HERE or CALL A FUNCTION
+        install_profiles()
+
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
+    def run(self):
+        install.run(self)
+        # PUT YOUR POST-INSTALL SCRIPT HERE or CALL A FUNCTION
+        install_profiles()
+
+def install_profiles():
+    # check if iterm2 dynamicprofiles exists
+    iterm_dynprof = Path(os.path.expanduser('~') + "/Library/Application Support/iTerm2/DynamicProfiles")
+    if not iterm_dynprof.is_dir():
+        raise FileNotFoundError('iterm2 DynamicProfiles directory not found')
+
+    # load iterm2  profile and populate "Log Directory" if exists
+    profiles_name = 'itermatic.json'
+    itermatic_path = Path(__file__).parent.resolve()
+    with open(itermatic_path/'profiles/'/profiles_name) as profiles_file:
+        profiles = json.load(profiles_file)
+        log_dir_path = itermatic_path.as_posix() + '/logs'
+        for profile in profiles['Profiles']:
+            profile['Log Directory'] = log_dir_path
+
+    # copy profile to iterm2 Dynamic Profiles IF it doesn't exist
+    profile_path = iterm_dynprof / profiles_name
+    if not profile_path.exists():
+        profile_path.write_text(json.dumps(profiles))
+
+# where are we?
+here = Path(__file__).parent.resolve()
 
 # Get the long description from the README file
 long_description = (here / "README.md").read_text(encoding="utf-8")
@@ -162,6 +203,10 @@ setup(
         "console_scripts": [
             "itermatic=itermatic.itermatic:main",
         ],
+    },
+    cmdclass={
+        'develop': PostDevelopCommand,
+        'install': PostInstallCommand,
     },
     # List additional URLs that are relevant to your project as a dict.
     #

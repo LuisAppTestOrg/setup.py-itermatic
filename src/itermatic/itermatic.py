@@ -24,9 +24,11 @@ def load_config() -> dict:
     with open(config_path/config_name) as config_file:
         return yaml.safe_load(config_file)
 
-async def itermate(connection):
+async def itermatic(connection):
     # load config.yml
     config = load_config()
+    print(config)
+
 
     # get app handle
     app = await iterm2.async_get_app(connection)
@@ -45,14 +47,14 @@ async def itermate(connection):
 
     await session.async_split_pane(
                 vertical=True, profile="Default", profile_customizations=customize_profile("Window2"))
-    await window.async_set_title("Two Green Windows!  Exciting!!")
+    await window.async_set_title(config['window']['title'])
     # give focus to this tab
     await app.async_activate()
 
     # set to fullscreen
     #await app.current_window.async_set_fullscreen(True)
     # create alert window and generate text
-    alert = iterm2.Alert("Welcome to Itermatic!", "Happy you're here.")
+    alert = iterm2.Alert(config['window']['alert_title'], config['window']['alert_text'])
     await alert.async_run(connection)
 
 
@@ -63,7 +65,7 @@ def main():
     AppKit.NSWorkspace.sharedWorkspace().launchApplication_("iTerm")
     # Passing True for the second parameter means keep trying to
     # connect until the app launches.
-    iterm2.run_until_complete(itermate, True)
+    iterm2.run_until_complete(itermatic, True)
 
 if __name__ == '__main__':
     main()

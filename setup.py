@@ -38,7 +38,7 @@ def install_profiles():
     # load iterm2  profile and populate "Log Directory" if exists
     profiles_name = 'itermatic.json'
     itermatic_path = Path(__file__).parent.resolve()
-    with open(itermatic_path/'profiles/'/profiles_name) as profiles_file:
+    with open(itermatic_path/'src/itermatic/profiles/'/profiles_name) as profiles_file:
         profiles = json.load(profiles_file)
         log_dir_path = itermatic_path.as_posix() + '/logs'
         for profile in profiles['Profiles']:
